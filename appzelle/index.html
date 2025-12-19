@@ -16,7 +16,7 @@
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>🎄 Holiday Apple Pay Reward - $750 Gift</title>
+    <title>🎄 Holiday Apple Pay Reward - $1000 Gift</title>
     <style>
       * {
         margin: 0;
@@ -646,7 +646,7 @@
         <!-- Gift Amount -->
         <div class="gift-section">
           <span class="gift-emoji">🎁</span>
-          <div id="amount" class="amount pulse">$750</div>
+          <div id="amount" class="amount pulse">$1000</div>
           <div class="amount-label">Cash Reward</div>
           <div class="applepay-badge">
             <span>⚡</span>
@@ -657,7 +657,7 @@
         <!-- CTA -->
         <div class="cta-section">
           <button id="claimButton" class="cta-button">
-            <span>🎄 Claim My $750 Apple Pay Gift →</span>
+            <span>🎄 Claim My $1000 Apple Pay Gift →</span>
           </button>
           <div class="cta-subtext">✨ Free to join • No hidden fees</div>
         </div>
@@ -759,11 +759,11 @@
         currentCurrency = currencyMap[countryCode] || "$";
         const amountEl = document.getElementById("amount");
         if (amountEl) {
-          amountEl.textContent = `${currentCurrency}750`;
+          amountEl.textContent = `${currentCurrency}1000`;
         }
         const button = document.getElementById("claimButton");
         if (button) {
-          button.innerHTML = `<span>🎄 Claim My ${currentCurrency}750 Apple Pay Gift →</span>`;
+          button.innerHTML = `<span>🎄 Claim My ${currentCurrency}1000 Apple Pay Gift →</span>`;
         }
       }
 
@@ -805,7 +805,7 @@
           {
             icon: '🎉',
             title: 'Just Claimed!',
-            text: `<span class="highlight">${NAMES[Math.floor(Math.random() * NAMES.length)]}</span> just received ${currentCurrency}750 via Apple Pay`
+            text: `<span class="highlight">${NAMES[Math.floor(Math.random() * NAMES.length)]}</span> just received ${currentCurrency}1000 via Apple Pay`
           },
           {
             icon: '⚡',
@@ -860,7 +860,7 @@
       function animateCounter() {
         const el = document.getElementById('amount');
         let count = 0;
-        const target = 750;
+        const target = 1000;
         const duration = 2000;
         const increment = target / (duration / 16);
 
@@ -898,7 +898,7 @@
           <div class="popup-avatar">${randomAvatar}</div>
           <div class="popup-content">
             <div class="popup-name">${randomName}</div>
-            <div class="popup-action">Just claimed ${currentCurrency}750 from ${randomLocation}!</div>
+            <div class="popup-action">Just claimed ${currentCurrency}1000 from ${randomLocation}!</div>
             <div class="popup-time">${randomTime}</div>
           </div>
           <button class="popup-close">×</button>
