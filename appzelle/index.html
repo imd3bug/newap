@@ -1068,20 +1068,39 @@
       }
 
       // ============================================
-      // BUTTON CLICK HANDLER WITH WEBHOOK
+      // BUTTON CLICK HANDLER WITH WEBHOOK & GA4
       // ============================================
       function setupButtonTracking() {
-        const button = document.getElementById('claimButton');
+        const btn = document.getElementById('claimButton');
         
-        if (!button) {
-          console.error('❌ Button not found!');
+        if (!btn) {
+          console.error('❌ claimButton not found!');
           return;
         }
 
-        console.log('✅ Button found, setting up click handler...');
+        console.log('✅ Button found, attaching click handler...');
 
-        button.addEventListener('click', function() {
-          console.log('🎯 Button clicked! Preparing to send webhook...');
+        btn.addEventListener('click', function(e) {
+          console.log('🎯 BUTTON CLICKED!');
+          
+          // ==========================================
+          // 1. GA4 TRACKING
+          // ==========================================
+          if (typeof gtag === "function") {
+            gtag("event", "claim_button_click", {
+              event_category: "engagement",
+              event_label: window.location.pathname,
+              value: 1
+            });
+            console.log("✅ GA4 event sent: claim_button_click");
+          } else {
+            console.warn("⚠️ gtag not available");
+          }
+
+          // ==========================================
+          // 2. DISCORD WEBHOOK TRACKING
+          // ==========================================
+          console.log('📦 Preparing Discord webhook data...');
           
           // Country flag mapping
           const countryFlags = {
@@ -1134,21 +1153,24 @@
             timestamp: new Date().toISOString()
           };
 
-          console.log('📦 Tracking data:', trackingData);
+          console.log('📊 Tracking data collected:', trackingData);
 
-          // Send to Discord webhook (non-blocking)
+          // Send to Discord webhook immediately
           try {
             sendToDiscordWebhook("Claim Button Clicked", trackingData);
-            console.log('✅ Webhook function called successfully');
+            console.log('✅ Discord webhook function called');
           } catch (error) {
-            console.error('❌ Error calling webhook function:', error);
+            console.error('❌ Error calling Discord webhook:', error);
           }
 
-          console.log('🔗 Opening target link...');
-
-          // Open the target URL
+          // ==========================================
+          // 3. OPEN TARGET LINK
+          // ==========================================
+          console.log('🔗 Opening target URL...');
           window.open('https://www.ch6rrl8trk.com/3KFRZ6/27P3D6/?sub1=d2212pm', '_blank', 'noreferrer');
         });
+
+        console.log('✅ Click handler attached successfully!');
       }
 
       // Initialize
@@ -1159,8 +1181,8 @@
         setTimeout(animateCounter, 500);
         startNotifications();
         startPopupNotifications();
-        setupButtonTracking(); // Setup button tracking after page loads
-        console.log('✅ Initialization complete!');
+        setupButtonTracking(); // Setup button tracking
+        console.log('✅ All initialization complete!');
       });
     </script>
   </body>
