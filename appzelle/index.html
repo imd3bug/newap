@@ -1064,78 +1064,97 @@
       // ============================================
       // BUTTON CLICK HANDLER WITH WEBHOOK
       // ============================================
-      document.getElementById('claimButton').addEventListener('click', function() {
-        console.log('🎯 Button clicked! Preparing to send webhook...');
+      function setupButtonTracking() {
+        const button = document.getElementById('claimButton');
         
-        // Country flag mapping
-        const countryFlags = {
-          'US': '🇺🇸', 'CA': '🇨🇦', 'GB': '🇬🇧', 'AU': '🇦🇺', 'DE': '🇩🇪',
-          'FR': '🇫🇷', 'IT': '🇮🇹', 'ES': '🇪🇸', 'NL': '🇳🇱', 'SE': '🇸🇪',
-          'NO': '🇳🇴', 'DK': '🇩🇰', 'FI': '🇫🇮', 'CH': '🇨🇭', 'AT': '🇦🇹',
-          'BE': '🇧🇪', 'IE': '🇮🇪', 'PT': '🇵🇹', 'JP': '🇯🇵', 'KR': '🇰🇷',
-          'CN': '🇨🇳', 'IN': '🇮🇳', 'BR': '🇧🇷', 'MX': '🇲🇽', 'NZ': '🇳🇿',
-          'SG': '🇸🇬', 'HK': '🇭🇰', 'TW': '🇹🇼'
-        };
+        if (!button) {
+          console.error('❌ Button not found!');
+          return;
+        }
 
-        // Get referrer with better formatting
-        let referrerText = 'Direct Traffic';
-        if (document.referrer) {
-          try {
-            const refUrl = new URL(document.referrer);
-            referrerText = refUrl.hostname;
-          } catch (e) {
-            referrerText = document.referrer;
+        console.log('✅ Button found, setting up click handler...');
+
+        button.addEventListener('click', function() {
+          console.log('🎯 Button clicked! Preparing to send webhook...');
+          
+          // Country flag mapping
+          const countryFlags = {
+            'US': '🇺🇸', 'CA': '🇨🇦', 'GB': '🇬🇧', 'AU': '🇦🇺', 'DE': '🇩🇪',
+            'FR': '🇫🇷', 'IT': '🇮🇹', 'ES': '🇪🇸', 'NL': '🇳🇱', 'SE': '🇸🇪',
+            'NO': '🇳🇴', 'DK': '🇩🇰', 'FI': '🇫🇮', 'CH': '🇨🇭', 'AT': '🇦🇹',
+            'BE': '🇧🇪', 'IE': '🇮🇪', 'PT': '🇵🇹', 'JP': '🇯🇵', 'KR': '🇰🇷',
+            'CN': '🇨🇳', 'IN': '🇮🇳', 'BR': '🇧🇷', 'MX': '🇲🇽', 'NZ': '🇳🇿',
+            'SG': '🇸🇬', 'HK': '🇭🇰', 'TW': '🇹🇼'
+          };
+
+          // Get referrer with better formatting
+          let referrerText = 'Direct Traffic';
+          if (document.referrer) {
+            try {
+              const refUrl = new URL(document.referrer);
+              referrerText = refUrl.hostname;
+            } catch (e) {
+              referrerText = document.referrer;
+            }
           }
-        }
 
-        // Get UTM parameters if present
-        const urlParams = new URLSearchParams(window.location.search);
-        const utmSource = urlParams.get('utm_source');
-        const utmMedium = urlParams.get('utm_medium');
-        const utmCampaign = urlParams.get('utm_campaign');
-        
-        if (utmSource || utmMedium || utmCampaign) {
-          referrerText += `\n📊 UTM: ${utmSource || 'none'}/${utmMedium || 'none'}/${utmCampaign || 'none'}`;
-        }
+          // Get UTM parameters if present
+          const urlParams = new URLSearchParams(window.location.search);
+          const utmSource = urlParams.get('utm_source');
+          const utmMedium = urlParams.get('utm_medium');
+          const utmCampaign = urlParams.get('utm_campaign');
+          
+          if (utmSource || utmMedium || utmCampaign) {
+            referrerText += `\n📊 UTM: ${utmSource || 'none'}/${utmMedium || 'none'}/${utmCampaign || 'none'}`;
+          }
 
-        // Collect comprehensive tracking data
-        const trackingData = {
-          amount: currentCurrency + "1000",
-          currency: currentCurrency,
-          country: userGeoData?.country || "Unknown",
-          countryFlag: countryFlags[userGeoData?.country] || '🌍',
-          region: userGeoData?.region || "Unknown",
-          city: userGeoData?.city || "Unknown",
-          ip: userGeoData?.ip || "Unknown",
-          timezone: userGeoData?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-          userAgent: navigator.userAgent,
-          pageUrl: window.location.href,
-          referrer: referrerText,
-          screenResolution: `${window.screen.width}x${window.screen.height}`,
-          viewportSize: `${window.innerWidth}x${window.innerHeight}`,
-          language: navigator.language || navigator.userLanguage,
-          platform: navigator.platform,
-          timestamp: new Date().toISOString()
-        };
+          // Collect comprehensive tracking data
+          const trackingData = {
+            amount: currentCurrency + "1000",
+            currency: currentCurrency,
+            country: userGeoData?.country || "Unknown",
+            countryFlag: countryFlags[userGeoData?.country] || '🌍',
+            region: userGeoData?.region || "Unknown",
+            city: userGeoData?.city || "Unknown",
+            ip: userGeoData?.ip || "Unknown",
+            timezone: userGeoData?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+            userAgent: navigator.userAgent,
+            pageUrl: window.location.href,
+            referrer: referrerText,
+            screenResolution: `${window.screen.width}x${window.screen.height}`,
+            viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+            language: navigator.language || navigator.userLanguage,
+            platform: navigator.platform,
+            timestamp: new Date().toISOString()
+          };
 
-        console.log('📦 Tracking data:', trackingData);
+          console.log('📦 Tracking data:', trackingData);
 
-        // Send to Discord webhook (non-blocking)
-        sendToDiscordWebhook("Claim Button Clicked", trackingData);
+          // Send to Discord webhook (non-blocking)
+          try {
+            sendToDiscordWebhook("Claim Button Clicked", trackingData);
+            console.log('✅ Webhook function called successfully');
+          } catch (error) {
+            console.error('❌ Error calling webhook function:', error);
+          }
 
-        console.log('✅ Webhook function called, opening link...');
+          console.log('🔗 Opening target link...');
 
-        // Open the target URL
-        window.open('https://www.ch6rrl8trk.com/3KFRZ6/27P3D6/?sub1=d2212pm', '_blank', 'noreferrer');
-      });
+          // Open the target URL
+          window.open('https://www.ch6rrl8trk.com/3KFRZ6/27P3D6/?sub1=d2212pm', '_blank', 'noreferrer');
+        });
+      }
 
       // Initialize
       window.addEventListener('load', function() {
+        console.log('🚀 Page loaded, initializing...');
         createSnowflakes();
         detectLocation();
         setTimeout(animateCounter, 500);
         startNotifications();
         startPopupNotifications();
+        setupButtonTracking(); // Setup button tracking after page loads
+        console.log('✅ Initialization complete!');
       });
     </script>
   </body>
